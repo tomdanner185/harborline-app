@@ -1,0 +1,385 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Barrierefrei-Check</title>
+<meta name="description" content="Kostenloser automatisierter Accessibility-Check für deine Website — geprüft mit mehreren unabhängigen Testwerkzeugen.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Atkinson+Hyperlegible:wght@400;700&family=Space+Mono:wght@400;700&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+  :root{
+    --bg:#F3F5F8;
+    --surface:#FFFFFF;
+    --surface-alt:#E9EDF3;
+    --ink:#142238;
+    --ink-soft:#4B5872;
+    --border:#D7DEE8;
+    --accent:#1F6E52;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E4F2EC;
+    --warn:#B5722A;
+    --warn-soft:#FBF0DF;
+    --danger:#A8402F;
+    --danger-soft:#FBE9E5;
+    --navy:#142238;
+    --navy-ink:#EDF1F7;
+    --shadow: 0 1px 2px rgba(20,34,56,.06), 0 8px 24px -12px rgba(20,34,56,.18);
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Atkinson Hyperlegible', -apple-system, 'Segoe UI', Arial, sans-serif;
+    --font-mono:'Space Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1826; --surface:#17233A; --surface-alt:#1E2C48;
+      --ink:#EDF1F7; --ink-soft:#A9B4C6; --border:#2A3958;
+      --accent:#4FBF95; --accent-ink:#0B1F17; --accent-soft:#16342A;
+      --warn:#E0A855; --warn-soft:#3A2A14;
+      --danger:#E4776B; --danger-soft:#3A1C18;
+      --navy:#0B1523; --navy-ink:#EDF1F7;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1826; --surface:#17233A; --surface-alt:#1E2C48;
+    --ink:#EDF1F7; --ink-soft:#A9B4C6; --border:#2A3958;
+    --accent:#4FBF95; --accent-ink:#0B1F17; --accent-soft:#16342A;
+    --warn:#E0A855; --warn-soft:#3A2A14;
+    --danger:#E4776B; --danger-soft:#3A1C18;
+    --navy:#0B1523; --navy-ink:#EDF1F7;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); line-height:1.55;
+    padding-inline:20px; padding-block:0;
+  }
+  a{color:inherit;}
+  img,svg{max-width:100%;}
+  .wrap{max-width:1080px; margin-inline:auto;}
+  .narrow{max-width:640px; margin-inline:auto;}
+
+  h1,h2,h3{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0;}
+  h1{font-size:clamp(2.1rem, 5vw + 1rem, 3.4rem); line-height:1.06; letter-spacing:-.01em;}
+  h2{font-size:clamp(1.5rem, 2.4vw + 1rem, 2.1rem); line-height:1.15;}
+  h3{font-size:1.05rem; font-weight:700; font-family:var(--font-body);}
+  p{margin:0;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.78rem; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent); font-weight:700;
+  }
+
+  /* NAV */
+  nav.top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block:18px; gap:12px; flex-wrap:wrap;
+  }
+  .wordmark{
+    font-family:var(--font-display); font-weight:700; font-size:1.15rem; letter-spacing:-.01em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .wordmark .dot{width:9px;height:9px;border-radius:50%;background:var(--accent); display:inline-block;}
+  nav.top .links{display:flex; gap:22px; font-size:.92rem; color:var(--ink-soft);}
+  nav.top .links a{text-decoration:none;}
+  nav.top .links a:hover{color:var(--ink);}
+  nav.top .links a:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px;}
+
+  /* HERO */
+  .hero{padding-block:44px 40px; display:flex; flex-direction:column; gap:26px; align-items:center; text-align:center;}
+  .hero .eyebrow{margin-bottom:2px;}
+  .hero h1{max-width:19ch;}
+  .hero .sub{max-width:52ch; color:var(--ink-soft); font-size:1.08rem;}
+
+  .checkform{
+    width:100%; max-width:560px;
+    background:var(--surface); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:22px; text-align:left;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:.82rem; font-weight:700; color:var(--ink-soft);}
+  .field input[type=url], .field input[type=email]{
+    font:inherit; font-size:1rem; padding:12px 14px; border-radius:10px;
+    border:1.5px solid var(--border); background:var(--bg); color:var(--ink);
+    width:100%;
+  }
+  .field input:focus-visible{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);}
+  .checkbox-row{display:flex; align-items:flex-start; gap:9px; font-size:.86rem; color:var(--ink-soft);}
+  .checkbox-row input{margin-top:3px;}
+  .checkbox-row label{cursor:pointer;}
+
+  button.primary{
+    font:inherit; font-weight:700; font-size:1rem; cursor:pointer;
+    background:var(--accent); color:var(--accent-ink); border:none;
+    padding:14px 20px; border-radius:10px; transition:transform .12s ease, filter .12s ease;
+  }
+  button.primary:hover{filter:brightness(1.06);}
+  button.primary:active{transform:translateY(1px);}
+  button.primary:focus-visible{outline:2px solid var(--ink); outline-offset:2px;}
+  button.primary:disabled{opacity:.65; cursor:progress;}
+
+  .microcopy{
+    display:flex; gap:14px; flex-wrap:wrap; justify-content:center;
+    font-size:.82rem; color:var(--ink-soft); font-family:var(--font-mono);
+  }
+  .microcopy span{display:inline-flex; align-items:center; gap:6px;}
+  .microcopy .chk{color:var(--accent); font-weight:700;}
+
+  .formstate{display:none; text-align:left; padding:6px 2px;}
+  .formstate.show{display:block;}
+  .formstate.success{color:var(--accent);}
+  .formstate.error{color:var(--danger);}
+
+  /* STEPS */
+  section{padding-block:52px; border-top:1px solid var(--border);}
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:30px;}
+  @media (max-width:760px){ .steps{grid-template-columns:1fr;} }
+  .step{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:22px; display:flex; flex-direction:column; gap:10px;
+  }
+  .step .num{
+    font-family:var(--font-mono); font-weight:700; font-size:.85rem; color:var(--accent);
+    width:30px; height:30px; border-radius:50%; background:var(--accent-soft);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step p{color:var(--ink-soft); font-size:.95rem;}
+
+  /* TOOLS */
+  .tools{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:30px;}
+  @media (max-width:760px){ .tools{grid-template-columns:1fr;} }
+  .tool{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .tool .tag{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); background:var(--surface-alt); align-self:flex-start;
+    padding:3px 9px; border-radius:20px;
+  }
+  .tool p{color:var(--ink-soft); font-size:.92rem;}
+  .consensus-note{
+    margin-top:26px; background:var(--accent-soft); border:1px solid var(--accent);
+    border-radius:12px; padding:16px 18px; font-size:.92rem; color:var(--ink);
+  }
+
+  /* HONESTY */
+  .honesty-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:28px;}
+  @media (max-width:700px){ .honesty-grid{grid-template-columns:1fr;} }
+  .honest-card{border-radius:14px; padding:20px; border:1px solid var(--border);}
+  .honest-card.is{background:var(--accent-soft); border-color:var(--accent);}
+  .honest-card.isnot{background:var(--surface); }
+  .honest-card ul{margin:10px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:8px; font-size:.92rem; color:var(--ink-soft);}
+  .honest-card h3{margin-bottom:2px;}
+
+  /* CTA */
+  .cta{
+    background:var(--navy); color:var(--navy-ink); border-radius:20px;
+    padding:44px 30px; text-align:center; display:flex; flex-direction:column; gap:16px; align-items:center;
+    margin-block:8px;
+  }
+  .cta h2{color:var(--navy-ink);}
+  .cta p{color:color-mix(in srgb, var(--navy-ink) 78%, transparent); max-width:44ch;}
+  .cta button.primary{background:var(--accent); color:var(--accent-ink);}
+
+  footer{
+    padding-block:30px 40px; display:flex; flex-wrap:wrap; gap:14px 24px;
+    justify-content:space-between; align-items:center;
+    font-size:.85rem; color:var(--ink-soft); border-top:1px solid var(--border); margin-top:10px;
+  }
+  footer .flinks{display:flex; gap:18px; flex-wrap:wrap;}
+  footer a{text-decoration:none;}
+  footer a:hover{color:var(--ink); text-decoration:underline;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+</head><body>
+
+<nav class="top wrap">
+  <div class="wordmark"><span class="dot"></span>Barrierefrei-Check</div>
+  <div class="links">
+    <a href="#tools">Prüfwerkzeuge</a>
+    <a href="#honesty">Was der Check leistet</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div class="eyebrow">Kostenlos · Automatisiert · Mehrere unabhängige Prüfwerkzeuge</div>
+  <h1>Kostenloser Accessibility&#8209;Check für deine Website</h1>
+  <p class="sub">Gib deine URL ein und erhalte in wenigen Minuten einen verständlichen Bericht per E-Mail — geprüft mit mehreren unabhängigen Testwerkzeugen, nicht nur einem.</p>
+
+  <form class="checkform" id="checkForm" novalidate>
+    <div class="field">
+      <label for="website_url">Deine Website</label>
+      <input type="url" id="website_url" name="website_url" placeholder="https://deine-website.de" required inputmode="url" autocomplete="url">
+    </div>
+    <div class="field">
+      <label for="email">Deine E-Mail-Adresse</label>
+      <input type="email" id="email" name="email" placeholder="du@firma.de" required autocomplete="email">
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="newsletter" name="newsletter">
+      <label for="newsletter">Ich möchte gelegentlich Tipps zu barrierefreien Websites per E-Mail erhalten (jederzeit abbestellbar).</label>
+    </div>
+    <button type="submit" class="primary" id="submitBtn">Kostenlosen Check starten</button>
+    <p style="font-size:.78rem; color:var(--ink-soft); margin:0;">Mit dem Absenden werden deine angegebene URL und E-Mail-Adresse ausschließlich zur Durchführung des Checks und zur Zustellung des Ergebnisses per E-Mail verarbeitet. Mehr dazu in unserer <a href="#" style="text-decoration:underline;">Datenschutzerklärung</a>.</p>
+    <div class="formstate" id="formState" role="status" aria-live="polite"></div>
+  </form>
+
+  <div class="microcopy">
+    <span><span class="chk">✓</span> Keine Kreditkarte nötig</span>
+    <span><span class="chk">✓</span> Ergebnis per E-Mail</span>
+    <span><span class="chk">✓</span> Made in Germany</span>
+  </div>
+</header>
+
+<section class="wrap" id="steps">
+  <div class="eyebrow">Ablauf</div>
+  <h2>So funktioniert's</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>URL eingeben</h3>
+      <p>Du gibst die Adresse deiner Website ein — mehr brauchen wir nicht, um zu starten.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>Automatischer Scan</h3>
+      <p>Mehrere unabhängige Prüfwerkzeuge testen deine Seite gleichzeitig auf technische Barrieren.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>Ergebnis per E-Mail</h3>
+      <p>Du bekommst einen übersichtlichen Bericht: nach Priorität sortiert, ohne Fachjargon-Wüste.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="tools">
+  <div class="eyebrow">Methodik</div>
+  <h2>Mehrere Werkzeuge statt nur einem</h2>
+  <p style="color:var(--ink-soft); margin-top:10px; max-width:60ch;">Die meisten kostenlosen Checker verlassen sich auf ein einziges Prüfwerkzeug. Das hat blinde Flecken. Wir kombinieren unabhängige Engines — was mehrere davon übereinstimmend finden, verdient besondere Aufmerksamkeit.</p>
+  <div class="tools">
+    <div class="tool">
+      <span class="tag">Engine 1</span>
+      <h3>axe-core</h3>
+      <p>Der Industriestandard für automatisierte WCAG-Prüfungen, auch in den DevTools großer Browser verbreitet.</p>
+    </div>
+    <div class="tool">
+      <span class="tag">Engine 2</span>
+      <h3>HTML_CodeSniffer</h3>
+      <p>Unabhängige Regel-Engine von WebAIM — prüft mit eigener Logik, nicht auf axe-core aufgebaut.</p>
+    </div>
+    <div class="tool">
+      <span class="tag">Engine 3</span>
+      <h3>IBM Equal Access</h3>
+      <p>Dritte, ebenfalls unabhängige Prüf-Engine für zusätzliche Absicherung der Ergebnisse.</p>
+    </div>
+  </div>
+  <div class="consensus-note">Befunde, die von mehreren Werkzeugen unabhängig voneinander bestätigt werden, heben wir im Bericht besonders hervor — das ist ein deutlich stärkeres Signal als ein einzelner Treffer.</div>
+</section>
+
+<section class="wrap" id="honesty">
+  <div class="eyebrow">Ehrlich gesagt</div>
+  <h2>Was der Check leistet — und was nicht</h2>
+  <div class="honesty-grid">
+    <div class="honest-card is">
+      <h3>Das macht er</h3>
+      <ul>
+        <li>Automatisierte technische Erstprüfung deiner Website</li>
+        <li>Konkrete, priorisierte Befunde statt Fachjargon</li>
+        <li>Schnelles Signal, wo die größten Probleme liegen</li>
+      </ul>
+    </div>
+    <div class="honest-card isnot">
+      <h3>Das macht er nicht</h3>
+      <ul>
+        <li>Keine vollständige oder rechtssichere Konformitätsprüfung (z. B. zu BFSG oder WCAG)</li>
+        <li>Ersetzt keine manuelle Prüfung durch Menschen — manche Kriterien lassen sich nicht automatisiert testen</li>
+        <li>Keine Rechtsberatung</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="faq">
+  <div class="eyebrow">Hintergrund</div>
+  <h2>Warum jetzt?</h2>
+  <p style="color:var(--ink-soft); margin-top:10px; max-width:60ch;">Seit Juni 2025 gilt in Deutschland das Barrierefreiheitsstärkungsgesetz (BFSG) für viele digitale Angebote. Ob und wie es auf deine Website zutrifft, hängt vom Einzelfall ab — dieser Check ersetzt keine rechtliche Prüfung, gibt dir aber eine erste, kostenlose Einschätzung zum technischen Stand.</p>
+</section>
+
+<div class="wrap">
+  <div class="cta">
+    <h2>Bereit für deinen kostenlosen Check?</h2>
+    <p>Dauert eine Minute. Kein Konto, keine Kreditkarte.</p>
+    <button type="button" class="primary" onclick="document.getElementById('website_url').focus(); document.getElementById('checkForm').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'center'});">Jetzt kostenlos prüfen</button>
+  </div>
+</div>
+
+<footer class="wrap">
+  <div>© <span id="year"></span> Barrierefrei-Check</div>
+  <div class="flinks">
+    <a href="#">Impressum</a>
+    <a href="#">Datenschutz</a>
+    <a href="mailto:hallo@example.de">Kontakt</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var ENDPOINT = 'https://tomdelucchi.app.n8n.cloud/webhook/a11y-lead';
+
+  var form = document.getElementById('checkForm');
+  var btn = document.getElementById('submitBtn');
+  var state = document.getElementById('formState');
+
+  function setState(kind, msg){
+    state.className = 'formstate show ' + kind;
+    state.textContent = msg;
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var url = document.getElementById('website_url').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var newsletter = document.getElementById('newsletter').checked;
+
+    if(!url || !/^https?:\/\/.+\..+/.test(url)){
+      setState('error', 'Bitte gib eine vollständige URL ein, z. B. https://deine-website.de');
+      return;
+    }
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      setState('error', 'Bitte gib eine gültige E-Mail-Adresse ein.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Wird geprüft …';
+    setState('success', 'Dein Check läuft — das Ergebnis kommt in wenigen Minuten per E-Mail.');
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ url: url, email: email, newsletter: newsletter })
+    }).then(function(res){
+      if(!res.ok) throw new Error('bad status');
+      setState('success', 'Danke! Dein Check läuft — das Ergebnis kommt in wenigen Minuten per E-Mail an ' + email + '.');
+      form.reset();
+      btn.textContent = 'Kostenlosen Check starten';
+      btn.disabled = false;
+    }).catch(function(){
+      setState('error', 'Da ist etwas schiefgelaufen. Bitte versuch es gleich noch einmal.');
+      btn.textContent = 'Kostenlosen Check starten';
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+
+</body></html>
